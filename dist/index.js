@@ -26497,25 +26497,11 @@ exports.default = (bucketName, environmentPrefix) => __awaiter(void 0, void 0, v
     validateEnvVars_1.default(exports.requiredEnvVars);
     console.log('Emptying S3 bucket...');
     console.log('Fetching objects...');
-    let objects = yield s3Client_1.default.listObjectsV2({ Bucket: bucketName }).promise();
-    if (objects.Contents && objects.Contents.length >= 1) {
-        const deleteParams = {
-            Bucket: bucketName,
-            Delete: {
-                Objects: []
-            }
-        };
-        for (const object of objects.Contents) {
-            deleteParams.Delete.Objects.push({ Key: object.Key });
-        }
-        console.log('Deleting objects...');
-        yield s3Client_1.default.deleteObjects(deleteParams).promise();
-    }
-    else {
-        console.log('S3 bucket already empty.');
-    }
-    while (objects.IsTruncated) {
-        objects = yield s3Client_1.default.listObjectsV2({ Bucket: bucketName, ContinuationToken: objects.NextContinuationToken }).promise();
+    let isTruncated = true;
+    let nextContinuationToken = undefined;
+    let objects;
+    while (isTruncated) {
+        objects = yield s3Client_1.default.listObjectsV2({ Bucket: bucketName, ContinuationToken: nextContinuationToken }).promise();
         if (objects.Contents && objects.Contents.length >= 1) {
             const deleteParams = {
                 Bucket: bucketName,
@@ -26526,8 +26512,11 @@ exports.default = (bucketName, environmentPrefix) => __awaiter(void 0, void 0, v
             for (const object of objects.Contents) {
                 deleteParams.Delete.Objects.push({ Key: object.Key });
             }
+            console.log('Deleting objects...');
             yield s3Client_1.default.deleteObjects(deleteParams).promise();
         }
+        isTruncated = objects.IsTruncated;
+        nextContinuationToken = objects.NextContinuationToken;
     }
     yield s3Client_1.default.deleteBucket({ Bucket: bucketName }).promise();
     yield deactivateDeployments_1.default(repo, environmentPrefix);
