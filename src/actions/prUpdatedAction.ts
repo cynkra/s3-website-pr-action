@@ -14,11 +14,8 @@ export const requiredEnvVars = [
 ];
 
 export default async (bucketName: string, uploadDirectory: string, environmentPrefix: string) => {
-  if (process.env['AWS_DEFAULT_REGION']) {
-    const websiteUrl = `http://${bucketName}.s3-website-${process.env['AWS_DEFAULT_REGION']}.amazonaws.com`;
-  } else {
-    const websiteUrl = `http://${bucketName}.s3-website-eu-east-1.amazonaws.com`;
-  }
+  const awsRegion = process.env['AWS_DEFAULT_REGION'] ? process.env['AWS_DEFAULT_REGION'] : 'eu-east-1';
+  const websiteUrl = `http://${bucketName}.s3-website-${awsRegion}.amazonaws.com`;
   const { repo } = github.context;
   const branchName = github.context.payload.pull_request!.head.ref;
 
