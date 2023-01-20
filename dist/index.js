@@ -7796,7 +7796,7 @@ exports.requiredEnvVars = [
 ];
 exports.default = (bucketName, uploadDirectory, environmentPrefix) => __awaiter(void 0, void 0, void 0, function* () {
     const awsRegion = process.env['AWS_REGION'] ? process.env['AWS_REGION'] : 'us-east-1';
-    const websiteUrl = `http://${bucketName}.s3-website-${awsRegion}.amazonaws.com`;
+    const websiteUrl = `http://${bucketName}.s3-website.${awsRegion}.amazonaws.com`;
     const { repo } = github.context;
     const branchName = github.context.payload.pull_request.head.ref;
     console.log("PR Updated");
