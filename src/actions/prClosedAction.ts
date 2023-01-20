@@ -15,7 +15,7 @@ export default async (bucketName: string, environmentPrefix: string) => {
   console.log('Emptying S3 bucket...');
 
   console.log('Fetching objects...');
-  const objects = await S3.listObjectsV2({ Bucket: bucketName }).promise();
+  let objects = await S3.listObjectsV2({ Bucket: bucketName }).promise();
 
   if (objects.Contents && objects.Contents.length >= 1) {
     const deleteParams: DeleteObjectsRequest = {
@@ -33,6 +33,24 @@ export default async (bucketName: string, environmentPrefix: string) => {
     await S3.deleteObjects(deleteParams).promise();
   } else {
     console.log('S3 bucket already empty.');
+  }
+
+  while(objects.IsTruncated){
+		objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: objects.NextContinuationToken }).promise();
+	  if (objects.Contents && objects.Contents.length >= 1) {
+      const deleteParams: DeleteObjectsRequest = {
+        Bucket: bucketName,
+        Delete: {
+          Objects: []
+        }
+      };
+
+    for (const object of objects.Contents) {
+      deleteParams.Delete.Objects.push({ Key: object.Key });
+    }
+
+    await S3.deleteObjects(deleteParams).promise();
+    }
   }
 
   await S3.deleteBucket({ Bucket: bucketName }).promise();
