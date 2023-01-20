@@ -16,10 +16,10 @@ export default async (bucketName: string, environmentPrefix: string) => {
 
   console.log('Fetching objects...');
   let isTruncated: boolean | undefined = true;
-	let nextContinuationToken: string | undefined = undefined;
-	let objects: ListObjectsV2Output;
-	while(isTruncated){
-		objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: nextContinuationToken }).promise();
+  let nextContinuationToken: string | undefined = undefined;
+  let objects: ListObjectsV2Output;
+  while(isTruncated){
+    objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: nextContinuationToken }).promise();
     if (objects.Contents && objects.Contents.length >= 1) {
       const deleteParams: DeleteObjectsRequest = {
         Bucket: bucketName,
@@ -35,7 +35,7 @@ export default async (bucketName: string, environmentPrefix: string) => {
       await S3.deleteObjects(deleteParams).promise();
     }
     isTruncated = objects.IsTruncated;
-		nextContinuationToken = objects.NextContinuationToken;
+    nextContinuationToken = objects.NextContinuationToken;
   }
 
   await S3.deleteBucket({ Bucket: bucketName }).promise();
