@@ -8809,7 +8809,7 @@ AWS.util.update(AWS, {
   /**
    * @constant
    */
-  VERSION: '2.1301.0',
+  VERSION: '2.1302.0',
 
   /**
    * @api private
@@ -42317,7 +42317,13 @@ exports["default"] = (repo, environmentPrefix) => __awaiter(void 0, void 0, void
     const environment = `${environmentPrefix || 'PR-'}${github.context.payload.pull_request.number}`;
     const deployments = yield octokit_1.default.repos.listDeployments(Object.assign(Object.assign({}, repo), { environment: environment }));
     console.log(JSON.stringify(deployments));
+    const existing = deployments.data.length;
+    if (existing < 1) {
+        console.log(`No exiting deployments found for pull request`);
+        return;
+    }
     for (const deployment of deployments.data) {
+        console.log(`Deleting existing deployment - ${deployment.id}`);
         yield octokit_1.default.repos.deleteDeployment(Object.assign(Object.assign({}, repo), { deployment_id: deployment.id }));
     }
     ;
