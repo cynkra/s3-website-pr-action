@@ -1,6 +1,6 @@
 import * as github from "@actions/github";
 import S3 from '../s3Client';
-import { DeleteObjectsRequest } from 'aws-sdk/clients/s3';
+import { DeleteObjectsRequest, ListObjectsV2Output } from 'aws-sdk/clients/s3';
 import validateEnvVars from '../utils/validateEnvVars';
 import deactivateDeployments from '../utils/deactivateDeployments';
 import deleteDeployments from "../utils/deleteDeployments";
@@ -15,29 +15,12 @@ export default async (bucketName: string, environmentPrefix: string) => {
   console.log('Emptying S3 bucket...');
 
   console.log('Fetching objects...');
-  let objects = await S3.listObjectsV2({ Bucket: bucketName }).promise();
-
-  if (objects.Contents && objects.Contents.length >= 1) {
-    const deleteParams: DeleteObjectsRequest = {
-      Bucket: bucketName,
-      Delete: {
-        Objects: []
-      }
-    };
-
-    for (const object of objects.Contents) {
-      deleteParams.Delete.Objects.push({ Key: object.Key });
-    }
-
-    console.log('Deleting objects...');
-    await S3.deleteObjects(deleteParams).promise();
-  } else {
-    console.log('S3 bucket already empty.');
-  }
-
-  while(objects.IsTruncated){
-		objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: objects.NextContinuationToken }).promise();
-	  if (objects.Contents && objects.Contents.length >= 1) {
+  let isTruncated: boolean | undefined = true;
+  let nextContinuationToken: string | undefined = undefined;
+  let objects: ListObjectsV2Output;
+  while(isTruncated){
+    objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: nextContinuationToken }).promise();
+    if (objects.Contents && objects.Contents.length >= 1) {
       const deleteParams: DeleteObjectsRequest = {
         Bucket: bucketName,
         Delete: {
@@ -45,12 +28,14 @@ export default async (bucketName: string, environmentPrefix: string) => {
         }
       };
 
-    for (const object of objects.Contents) {
-      deleteParams.Delete.Objects.push({ Key: object.Key });
+      for (const object of objects.Contents) {
+        deleteParams.Delete.Objects.push({ Key: object.Key });
+      }
+      console.log('Deleting objects...');
+      await S3.deleteObjects(deleteParams).promise();
     }
-
-    await S3.deleteObjects(deleteParams).promise();
-    }
+    isTruncated = objects.IsTruncated;
+    nextContinuationToken = objects.NextContinuationToken;
   }
 
   await S3.deleteBucket({ Bucket: bucketName }).promise();
