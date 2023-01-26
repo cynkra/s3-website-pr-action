@@ -1,5 +1,5 @@
 import * as github from "@actions/github";
-import githubClient from '../githubClient';
+import octokit from '../octokit';
 
 export default async (
     repo: {
@@ -10,7 +10,7 @@ export default async (
 ) => {
     const environment = `${environmentPrefix || 'PR-'}${github.context.payload.pull_request!.number}`;
 
-    const deployments = await githubClient.repos.listDeployments({
+    const deployments = await octokit.repos.listDeployments({
         repo: repo.repo,
         owner: repo.owner,
         environment,
@@ -25,7 +25,7 @@ export default async (
     for (const deployment of deployments.data) {
         console.log(`Deactivating existing deployment - ${deployment.id}`);
 
-        await githubClient.repos.createDeploymentStatus({
+        await octokit.repos.createDeploymentStatus({
             ...repo,
             deployment_id: deployment.id,
             state: 'inactive',

@@ -3,9 +3,8 @@ import S3 from "../s3Client";
 import s3UploadDirectory from "../utils/s3UploadDirectory";
 import validateEnvVars from "../utils/validateEnvVars";
 import checkBucketExists from "../utils/checkBucketExists";
-import githubClient from "../githubClient";
+import octokit from "../octokit";
 import deactivateDeployments from "../utils/deactivateDeployments";
-import { ReposCreateDeploymentResponseData } from "@octokit/types";
 
 export const requiredEnvVars = [
   "AWS_ACCESS_KEY_ID",
@@ -43,7 +42,7 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
 
   await deactivateDeployments(repo, environmentPrefix);
 
-  const deployment = await githubClient.repos.createDeployment({
+  const deployment = await octokit.repos.createDeployment({
     ...repo,
     ref: `refs/heads/${branchName}`,
     environment: `${environmentPrefix || 'PR-'}${github.context.payload.pull_request!.number}`,
@@ -52,8 +51,8 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
     required_contexts: [],
   });
 
-  if (isSuccessResponse(deployment.data)) {
-    await githubClient.repos.createDeploymentStatus({
+  if ("id" in deployment.data) {
+    await octokit.repos.createDeploymentStatus({
       ...repo,
       deployment_id: deployment.data.id,
       state: "in_progress",
@@ -62,7 +61,7 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
     console.log("Uploading files...");
     await s3UploadDirectory(bucketName, uploadDirectory);
 
-    await githubClient.repos.createDeploymentStatus({
+    await octokit.repos.createDeploymentStatus({
       ...repo,
       deployment_id: deployment.data.id,
       state: "success",
@@ -72,9 +71,3 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
     console.log(`Website URL: ${websiteUrl}`);
   }
 };
-
-function isSuccessResponse(
-  object: any
-): object is ReposCreateDeploymentResponseData {
-  return "id" in object;
-}
