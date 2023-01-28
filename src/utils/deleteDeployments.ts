@@ -15,8 +15,6 @@ export default async (
       environment: environment
     });
 
-    console.log(JSON.stringify(deployments))
-
     const existing = deployments.data.length;
     if (existing < 1) {
         console.log(`No exiting deployments found for pull request`);
