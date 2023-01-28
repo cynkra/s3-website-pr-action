@@ -42305,7 +42305,6 @@ const octokit_1 = __importDefault(__nccwpck_require__(6161));
 exports["default"] = (repo, environmentPrefix) => __awaiter(void 0, void 0, void 0, function* () {
     const environment = `${environmentPrefix || 'PR-'}${github.context.payload.pull_request.number}`;
     const deployments = yield octokit_1.default.repos.listDeployments(Object.assign(Object.assign({}, repo), { environment: environment }));
-    console.log(JSON.stringify(deployments));
     const existing = deployments.data.length;
     if (existing < 1) {
         console.log(`No exiting deployments found for pull request`);
