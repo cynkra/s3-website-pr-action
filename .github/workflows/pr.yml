@@ -37,7 +37,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: "eu-west-1"
+      AWS_REGION: "eu-west-1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
@@ -52,3 +52,4 @@ jobs:
         with:
           bucket-prefix: "s3-website-pr-action"
           folder-to-copy: "./example-app"
+          region: "eu-central-1"

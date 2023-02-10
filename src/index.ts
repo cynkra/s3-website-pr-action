@@ -11,6 +11,7 @@ const main = async () => {
 
     const prNumber = github.context.payload.pull_request!.number;
     const bucketName = `${bucketPrefix}-pr${prNumber}`;
+    const region = core.getInput('region');
 
     console.log(`Bucket Name: ${bucketName}`);
 
@@ -21,15 +22,15 @@ const main = async () => {
         case 'opened':
         case 'reopened':
         case 'synchronize':
-          await prUpdatedAction(bucketName, folderToCopy, environmentPrefix);
+          await prUpdatedAction(bucketName, folderToCopy, environmentPrefix, region);
           break;
 
         case 'closed':
-          await prClosedAction(bucketName, environmentPrefix);
+          await prClosedAction(bucketName, environmentPrefix, region);
           break;
 
         default:
-          console.log('PR not created, modified or deleted. Skiping...');
+          console.log('PR not created, modified or deleted. Skipping...');
           break;
       }
     } else {

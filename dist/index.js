@@ -556,8 +556,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
+                throw new Error(`Failed to get ID Token. \n
+        Error Code : ${error.statusCode}\n
         Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -8084,8 +8084,8 @@ var PromisesDependency;
  *     Body signing can only be disabled when using https. Defaults to `true`.
  *
  * @!attribute s3UsEast1RegionalEndpoint
- *   @return ['legacy'|'regional'] when region is set to 'us-east-1', whether to send s3
- *     request to global endpoints or 'us-east-1' regional endpoints. This config is only
+ *   @return ['legacy'|'regional'] when region is set to 'eu-central-1', whether to send s3
+ *     request to global endpoints or 'eu-central-1' regional endpoints. This config is only
  *     applicable to S3 client;
  *     Defaults to 'legacy'
  * @!attribute s3UseArnRegion
@@ -8260,8 +8260,8 @@ AWS.Config = AWS.util.inherit({
    *   should be disabled when using signature version `v4`. Body signing
    *   can only be disabled when using https. Defaults to `true`.
    * @option options s3UsEast1RegionalEndpoint ['legacy'|'regional'] when region
-   *   is set to 'us-east-1', whether to send s3 request to global endpoints or
-   *   'us-east-1' regional endpoints. This config is only applicable to S3 client.
+   *   is set to 'eu-central-1', whether to send s3 request to global endpoints or
+   *   'eu-central-1' regional endpoints. This config is only applicable to S3 client.
    *   Defaults to `legacy`
    * @option options s3UseArnRegion [Boolean] whether to override the request region
    *   with the region inferred from requested resource's ARN. Only available for S3 buckets
@@ -9441,8 +9441,8 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
    *     // See the IdentityPoolId param for AWS.CognitoIdentity.getID (linked below)
    *     // See the IdentityId param for AWS.CognitoIdentity.getCredentialsForIdentity
    *     // or AWS.CognitoIdentity.getOpenIdToken (linked below)
-   *     IdentityPoolId: 'us-east-1:1699ebc0-7900-4099-b910-2df94f52a030',
-   *     IdentityId: 'us-east-1:128d0a74-c82f-4553-916d-90053e4a8b0f'
+   *     IdentityPoolId: 'eu-central-1:1699ebc0-7900-4099-b910-2df94f52a030',
+   *     IdentityId: 'eu-central-1:128d0a74-c82f-4553-916d-90053e4a8b0f'
    *
    *     // optional, only necessary when the identity pool is not configured
    *     // to use IAM roles in the Amazon Cognito Console
@@ -9472,7 +9472,7 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
    *      // if configuration is not provided, then configuration will be pulled from AWS.config
    *
    *      // region should match the region your identity pool is located in
-   *      region: 'us-east-1',
+   *      region: 'eu-central-1',
    *
    *      // specify timeout options
    *      httpOptions: {
@@ -10813,7 +10813,7 @@ var AWS = __nccwpck_require__(8437);
 var STS = __nccwpck_require__(7513);
 var iniLoader = AWS.util.iniLoader;
 
-var ASSUME_ROLE_DEFAULT_REGION = 'us-east-1';
+var ASSUME_ROLE_DEFAULT_REGION = 'eu-central-1';
 
 /**
  * Represents credentials loaded from shared credentials file
@@ -16822,7 +16822,7 @@ function isGlobalRegion(region) {
 
 function getRealRegion(region) {
   return ['fips-aws-global', 'aws-fips', 'aws-global'].includes(region)
-      ? 'us-east-1'
+      ? 'eu-central-1'
       : ['fips-aws-us-gov-global', 'aws-us-gov-global'].includes(region)
       ? 'us-gov-west-1'
       : region.replace(/fips-(dkr-|prod-)?|-fips/, '');
@@ -17275,7 +17275,7 @@ AWS.Request = inherit({
     if (service.signingRegion) {
       region = service.signingRegion;
     } else if (service.isGlobalEndpoint) {
-      region = 'us-east-1';
+      region = 'eu-central-1';
     }
 
     this.domain = domain && domain.active;
@@ -20121,8 +20121,8 @@ AWS.util.update(AWS.S3.prototype, {
     var msg;
     var messages = [];
 
-    // default to us-east-1 when no region is provided
-    if (!this.config.region) this.config.region = 'us-east-1';
+    // default to eu-central-1 when no region is provided
+    if (!this.config.region) this.config.region = 'eu-central-1';
 
     if (!this.config.endpoint && this.config.s3BucketEndpoint) {
       messages.push('An endpoint must be provided when configuring ' +
@@ -20294,9 +20294,9 @@ AWS.util.update(AWS.S3.prototype, {
   },
 
   /**
-   * When us-east-1 region endpoint configuration is set, in stead of sending request to
+   * When eu-central-1 region endpoint configuration is set, in stead of sending request to
    * global endpoint(e.g. 's3.amazonaws.com'), we will send request to
-   * 's3.us-east-1.amazonaws.com'.
+   * 's3.eu-central-1.amazonaws.com'.
    * @api private
    */
   optInUsEast1RegionalEndpoint: function optInUsEast1RegionalEndpoint(req) {
@@ -20309,13 +20309,13 @@ AWS.util.update(AWS.S3.prototype, {
     });
     if (
       !(service._originalConfig || {}).endpoint &&
-      req.httpRequest.region === 'us-east-1' &&
+      req.httpRequest.region === 'eu-central-1' &&
       config.s3UsEast1RegionalEndpoint === 'regional' &&
       req.httpRequest.endpoint.hostname.indexOf('s3.amazonaws.com') >= 0
     ) {
       var insertPoint = config.endpoint.indexOf('.amazonaws.com');
       regionalEndpoint = config.endpoint.substring(0, insertPoint) +
-        '.us-east-1' + config.endpoint.substring(insertPoint);
+        '.eu-central-1' + config.endpoint.substring(insertPoint);
       req.httpRequest.updateEndpoint(regionalEndpoint);
     }
   },
@@ -20675,7 +20675,7 @@ AWS.util.update(AWS.S3.prototype, {
       if (!region && req.operation === 'createBucket' && !resp.error) {
         var createBucketConfiguration = req.params.CreateBucketConfiguration;
         if (!createBucketConfiguration) {
-          region = 'us-east-1';
+          region = 'eu-central-1';
         } else if (createBucketConfiguration.LocationConstraint === 'EU') {
           region = 'eu-west-1';
         } else {
@@ -20796,7 +20796,7 @@ AWS.util.update(AWS.S3.prototype, {
     var request = resp.request;
     var bucket = request.params.Bucket;
     if (!error || error.code !== 'NetworkingError' || !bucket ||
-        request.httpRequest.region === 'us-east-1') {
+        request.httpRequest.region === 'eu-central-1') {
       return done();
     }
     var service = request.service;
@@ -20807,14 +20807,14 @@ AWS.util.update(AWS.S3.prototype, {
       service.updateReqBucketRegion(request, cachedRegion);
       done();
     } else if (!s3util.dnsCompatibleBucketName(bucket)) {
-      service.updateReqBucketRegion(request, 'us-east-1');
-      if (bucketRegionCache[bucket] !== 'us-east-1') {
-        bucketRegionCache[bucket] = 'us-east-1';
+      service.updateReqBucketRegion(request, 'eu-central-1');
+      if (bucketRegionCache[bucket] !== 'eu-central-1') {
+        bucketRegionCache[bucket] = 'eu-central-1';
       }
       done();
     } else if (request.httpRequest.virtualHostedBucket) {
       var getRegionReq = service.listObjects({Bucket: bucket, MaxKeys: 0});
-      service.updateReqBucketRegion(getRegionReq, 'us-east-1');
+      service.updateReqBucketRegion(getRegionReq, 'eu-central-1');
       getRegionReq._requestRegionForBucket = bucket;
 
       getRegionReq.send(function() {
@@ -23107,7 +23107,7 @@ var refreshUnsuccessful = function refreshUnsuccessful(
  *
  *     [default]
  *     sso_start_url = https://d-abc123.awsapps.com/start
- *     sso_region = us-east-1
+ *     sso_region = eu-central-1
  *
  * ## Using custom profiles
  *
@@ -42015,7 +42015,7 @@ exports.requiredEnvVars = [
     "GITHUB_TOKEN",
 ];
 exports["default"] = (bucketName, uploadDirectory, environmentPrefix) => __awaiter(void 0, void 0, void 0, function* () {
-    const awsRegion = process.env['AWS_REGION'] ? process.env['AWS_REGION'] : 'us-east-1';
+    const awsRegion = process.env['AWS_REGION'] ? process.env['AWS_REGION'] : 'eu-central-1';
     const websiteUrl = `http://${bucketName}.s3-website.${awsRegion}.amazonaws.com`;
     const { repo } = github.context;
     const branchName = github.context.payload.pull_request.head.ref;
@@ -42024,7 +42024,7 @@ exports["default"] = (bucketName, uploadDirectory, environmentPrefix) => __await
     const bucketExists = yield (0, checkBucketExists_1.default)(bucketName);
     if (!bucketExists) {
         console.log("S3 bucket does not exist. Creating...");
-        yield s3Client_1.default.createBucket({ Bucket: bucketName }).promise();
+        yield s3Client_1.default.createBucket({ Bucket: bucketName, CreateBucketConfiguration: {LocationConstraint: awsRegion} }).promise();
         console.log("Configuring bucket website...");
         yield s3Client_1.default.putBucketWebsite({
             Bucket: bucketName,
@@ -42659,7 +42659,7 @@ module.exports = {"o":{}};
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"rules":{"*/*":{"endpoint":"{service}.{region}.amazonaws.com"},"cn-*/*":{"endpoint":"{service}.{region}.amazonaws.com.cn"},"us-iso-*/*":"usIso","us-isob-*/*":"usIsob","*/budgets":"globalSSL","*/cloudfront":"globalSSL","*/sts":"globalSSL","*/importexport":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2","globalEndpoint":true},"*/route53":"globalSSL","cn-*/route53":{"endpoint":"{service}.amazonaws.com.cn","globalEndpoint":true,"signingRegion":"cn-northwest-1"},"us-gov-*/route53":"globalGovCloud","us-iso-*/route53":{"endpoint":"{service}.c2s.ic.gov","globalEndpoint":true,"signingRegion":"us-iso-east-1"},"us-isob-*/route53":{"endpoint":"{service}.sc2s.sgov.gov","globalEndpoint":true,"signingRegion":"us-isob-east-1"},"*/waf":"globalSSL","*/iam":"globalSSL","cn-*/iam":{"endpoint":"{service}.cn-north-1.amazonaws.com.cn","globalEndpoint":true,"signingRegion":"cn-north-1"},"us-gov-*/iam":"globalGovCloud","us-gov-*/sts":{"endpoint":"{service}.{region}.amazonaws.com"},"us-gov-west-1/s3":"s3signature","us-west-1/s3":"s3signature","us-west-2/s3":"s3signature","eu-west-1/s3":"s3signature","ap-southeast-1/s3":"s3signature","ap-southeast-2/s3":"s3signature","ap-northeast-1/s3":"s3signature","sa-east-1/s3":"s3signature","us-east-1/s3":{"endpoint":"{service}.amazonaws.com","signatureVersion":"s3"},"us-east-1/sdb":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2"},"*/sdb":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"v2"},"*/resource-explorer-2":"dualstackByDefault","*/kendra-ranking":"dualstackByDefault","*/codecatalyst":"globalDualstackByDefault"},"fipsRules":{"*/*":"fipsStandard","us-gov-*/*":"fipsStandard","us-iso-*/*":{"endpoint":"{service}-fips.{region}.c2s.ic.gov"},"us-iso-*/dms":"usIso","us-isob-*/*":{"endpoint":"{service}-fips.{region}.sc2s.sgov.gov"},"us-isob-*/dms":"usIsob","cn-*/*":{"endpoint":"{service}-fips.{region}.amazonaws.com.cn"},"*/api.ecr":"fips.api.ecr","*/api.sagemaker":"fips.api.sagemaker","*/batch":"fipsDotPrefix","*/eks":"fipsDotPrefix","*/models.lex":"fips.models.lex","*/runtime.lex":"fips.runtime.lex","*/runtime.sagemaker":{"endpoint":"runtime-fips.sagemaker.{region}.amazonaws.com"},"*/iam":"fipsWithoutRegion","*/route53":"fipsWithoutRegion","*/transcribe":"fipsDotPrefix","*/waf":"fipsWithoutRegion","us-gov-*/transcribe":"fipsDotPrefix","us-gov-*/api.ecr":"fips.api.ecr","us-gov-*/api.sagemaker":"fips.api.sagemaker","us-gov-*/models.lex":"fips.models.lex","us-gov-*/runtime.lex":"fips.runtime.lex","us-gov-*/acm-pca":"fipsWithServiceOnly","us-gov-*/batch":"fipsWithServiceOnly","us-gov-*/cloudformation":"fipsWithServiceOnly","us-gov-*/config":"fipsWithServiceOnly","us-gov-*/eks":"fipsWithServiceOnly","us-gov-*/elasticmapreduce":"fipsWithServiceOnly","us-gov-*/identitystore":"fipsWithServiceOnly","us-gov-*/dynamodb":"fipsWithServiceOnly","us-gov-*/elasticloadbalancing":"fipsWithServiceOnly","us-gov-*/guardduty":"fipsWithServiceOnly","us-gov-*/monitoring":"fipsWithServiceOnly","us-gov-*/resource-groups":"fipsWithServiceOnly","us-gov-*/runtime.sagemaker":"fipsWithServiceOnly","us-gov-*/servicecatalog-appregistry":"fipsWithServiceOnly","us-gov-*/servicequotas":"fipsWithServiceOnly","us-gov-*/ssm":"fipsWithServiceOnly","us-gov-*/sts":"fipsWithServiceOnly","us-gov-*/support":"fipsWithServiceOnly","us-gov-west-1/states":"fipsWithServiceOnly","us-iso-east-1/elasticfilesystem":{"endpoint":"elasticfilesystem-fips.{region}.c2s.ic.gov"},"us-gov-west-1/organizations":"fipsWithServiceOnly","us-gov-west-1/route53":{"endpoint":"route53.us-gov.amazonaws.com"},"*/resource-explorer-2":"fipsDualstackByDefault","*/kendra-ranking":"dualstackByDefault","*/codecatalyst":"fipsGlobalDualstackByDefault"},"dualstackRules":{"*/*":{"endpoint":"{service}.{region}.api.aws"},"cn-*/*":{"endpoint":"{service}.{region}.api.amazonwebservices.com.cn"},"*/s3":"dualstackLegacy","cn-*/s3":"dualstackLegacyCn","*/s3-control":"dualstackLegacy","cn-*/s3-control":"dualstackLegacyCn","ap-south-1/ec2":"dualstackLegacyEc2","eu-west-1/ec2":"dualstackLegacyEc2","sa-east-1/ec2":"dualstackLegacyEc2","us-east-1/ec2":"dualstackLegacyEc2","us-east-2/ec2":"dualstackLegacyEc2","us-west-2/ec2":"dualstackLegacyEc2"},"dualstackFipsRules":{"*/*":{"endpoint":"{service}-fips.{region}.api.aws"},"cn-*/*":{"endpoint":"{service}-fips.{region}.api.amazonwebservices.com.cn"},"*/s3":"dualstackFipsLegacy","cn-*/s3":"dualstackFipsLegacyCn","*/s3-control":"dualstackFipsLegacy","cn-*/s3-control":"dualstackFipsLegacyCn"},"patterns":{"globalSSL":{"endpoint":"https://{service}.amazonaws.com","globalEndpoint":true,"signingRegion":"us-east-1"},"globalGovCloud":{"endpoint":"{service}.us-gov.amazonaws.com","globalEndpoint":true,"signingRegion":"us-gov-west-1"},"s3signature":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"s3"},"usIso":{"endpoint":"{service}.{region}.c2s.ic.gov"},"usIsob":{"endpoint":"{service}.{region}.sc2s.sgov.gov"},"fipsStandard":{"endpoint":"{service}-fips.{region}.amazonaws.com"},"fipsDotPrefix":{"endpoint":"fips.{service}.{region}.amazonaws.com"},"fipsWithoutRegion":{"endpoint":"{service}-fips.amazonaws.com"},"fips.api.ecr":{"endpoint":"ecr-fips.{region}.amazonaws.com"},"fips.api.sagemaker":{"endpoint":"api-fips.sagemaker.{region}.amazonaws.com"},"fips.models.lex":{"endpoint":"models-fips.lex.{region}.amazonaws.com"},"fips.runtime.lex":{"endpoint":"runtime-fips.lex.{region}.amazonaws.com"},"fipsWithServiceOnly":{"endpoint":"{service}.{region}.amazonaws.com"},"dualstackLegacy":{"endpoint":"{service}.dualstack.{region}.amazonaws.com"},"dualstackLegacyCn":{"endpoint":"{service}.dualstack.{region}.amazonaws.com.cn"},"dualstackFipsLegacy":{"endpoint":"{service}-fips.dualstack.{region}.amazonaws.com"},"dualstackFipsLegacyCn":{"endpoint":"{service}-fips.dualstack.{region}.amazonaws.com.cn"},"dualstackLegacyEc2":{"endpoint":"api.ec2.{region}.aws"},"dualstackByDefault":{"endpoint":"{service}.{region}.api.aws"},"fipsDualstackByDefault":{"endpoint":"{service}-fips.{region}.api.aws"},"globalDualstackByDefault":{"endpoint":"{service}.global.api.aws"},"fipsGlobalDualstackByDefault":{"endpoint":"{service}-fips.global.api.aws"}}}');
+module.exports = JSON.parse('{"rules":{"*/*":{"endpoint":"{service}.{region}.amazonaws.com"},"cn-*/*":{"endpoint":"{service}.{region}.amazonaws.com.cn"},"us-iso-*/*":"usIso","us-isob-*/*":"usIsob","*/budgets":"globalSSL","*/cloudfront":"globalSSL","*/sts":"globalSSL","*/importexport":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2","globalEndpoint":true},"*/route53":"globalSSL","cn-*/route53":{"endpoint":"{service}.amazonaws.com.cn","globalEndpoint":true,"signingRegion":"cn-northwest-1"},"us-gov-*/route53":"globalGovCloud","us-iso-*/route53":{"endpoint":"{service}.c2s.ic.gov","globalEndpoint":true,"signingRegion":"us-iso-east-1"},"us-isob-*/route53":{"endpoint":"{service}.sc2s.sgov.gov","globalEndpoint":true,"signingRegion":"us-isob-east-1"},"*/waf":"globalSSL","*/iam":"globalSSL","cn-*/iam":{"endpoint":"{service}.cn-north-1.amazonaws.com.cn","globalEndpoint":true,"signingRegion":"cn-north-1"},"us-gov-*/iam":"globalGovCloud","us-gov-*/sts":{"endpoint":"{service}.{region}.amazonaws.com"},"us-gov-west-1/s3":"s3signature","us-west-1/s3":"s3signature","us-west-2/s3":"s3signature","eu-west-1/s3":"s3signature","ap-southeast-1/s3":"s3signature","ap-southeast-2/s3":"s3signature","ap-northeast-1/s3":"s3signature","sa-east-1/s3":"s3signature","eu-central-1/s3":{"endpoint":"{service}.amazonaws.com","signatureVersion":"s3"},"eu-central-1/sdb":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2"},"*/sdb":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"v2"},"*/resource-explorer-2":"dualstackByDefault","*/kendra-ranking":"dualstackByDefault","*/codecatalyst":"globalDualstackByDefault"},"fipsRules":{"*/*":"fipsStandard","us-gov-*/*":"fipsStandard","us-iso-*/*":{"endpoint":"{service}-fips.{region}.c2s.ic.gov"},"us-iso-*/dms":"usIso","us-isob-*/*":{"endpoint":"{service}-fips.{region}.sc2s.sgov.gov"},"us-isob-*/dms":"usIsob","cn-*/*":{"endpoint":"{service}-fips.{region}.amazonaws.com.cn"},"*/api.ecr":"fips.api.ecr","*/api.sagemaker":"fips.api.sagemaker","*/batch":"fipsDotPrefix","*/eks":"fipsDotPrefix","*/models.lex":"fips.models.lex","*/runtime.lex":"fips.runtime.lex","*/runtime.sagemaker":{"endpoint":"runtime-fips.sagemaker.{region}.amazonaws.com"},"*/iam":"fipsWithoutRegion","*/route53":"fipsWithoutRegion","*/transcribe":"fipsDotPrefix","*/waf":"fipsWithoutRegion","us-gov-*/transcribe":"fipsDotPrefix","us-gov-*/api.ecr":"fips.api.ecr","us-gov-*/api.sagemaker":"fips.api.sagemaker","us-gov-*/models.lex":"fips.models.lex","us-gov-*/runtime.lex":"fips.runtime.lex","us-gov-*/acm-pca":"fipsWithServiceOnly","us-gov-*/batch":"fipsWithServiceOnly","us-gov-*/cloudformation":"fipsWithServiceOnly","us-gov-*/config":"fipsWithServiceOnly","us-gov-*/eks":"fipsWithServiceOnly","us-gov-*/elasticmapreduce":"fipsWithServiceOnly","us-gov-*/identitystore":"fipsWithServiceOnly","us-gov-*/dynamodb":"fipsWithServiceOnly","us-gov-*/elasticloadbalancing":"fipsWithServiceOnly","us-gov-*/guardduty":"fipsWithServiceOnly","us-gov-*/monitoring":"fipsWithServiceOnly","us-gov-*/resource-groups":"fipsWithServiceOnly","us-gov-*/runtime.sagemaker":"fipsWithServiceOnly","us-gov-*/servicecatalog-appregistry":"fipsWithServiceOnly","us-gov-*/servicequotas":"fipsWithServiceOnly","us-gov-*/ssm":"fipsWithServiceOnly","us-gov-*/sts":"fipsWithServiceOnly","us-gov-*/support":"fipsWithServiceOnly","us-gov-west-1/states":"fipsWithServiceOnly","us-iso-east-1/elasticfilesystem":{"endpoint":"elasticfilesystem-fips.{region}.c2s.ic.gov"},"us-gov-west-1/organizations":"fipsWithServiceOnly","us-gov-west-1/route53":{"endpoint":"route53.us-gov.amazonaws.com"},"*/resource-explorer-2":"fipsDualstackByDefault","*/kendra-ranking":"dualstackByDefault","*/codecatalyst":"fipsGlobalDualstackByDefault"},"dualstackRules":{"*/*":{"endpoint":"{service}.{region}.api.aws"},"cn-*/*":{"endpoint":"{service}.{region}.api.amazonwebservices.com.cn"},"*/s3":"dualstackLegacy","cn-*/s3":"dualstackLegacyCn","*/s3-control":"dualstackLegacy","cn-*/s3-control":"dualstackLegacyCn","ap-south-1/ec2":"dualstackLegacyEc2","eu-west-1/ec2":"dualstackLegacyEc2","sa-east-1/ec2":"dualstackLegacyEc2","eu-central-1/ec2":"dualstackLegacyEc2","us-east-2/ec2":"dualstackLegacyEc2","us-west-2/ec2":"dualstackLegacyEc2"},"dualstackFipsRules":{"*/*":{"endpoint":"{service}-fips.{region}.api.aws"},"cn-*/*":{"endpoint":"{service}-fips.{region}.api.amazonwebservices.com.cn"},"*/s3":"dualstackFipsLegacy","cn-*/s3":"dualstackFipsLegacyCn","*/s3-control":"dualstackFipsLegacy","cn-*/s3-control":"dualstackFipsLegacyCn"},"patterns":{"globalSSL":{"endpoint":"https://{service}.amazonaws.com","globalEndpoint":true,"signingRegion":"eu-central-1"},"globalGovCloud":{"endpoint":"{service}.us-gov.amazonaws.com","globalEndpoint":true,"signingRegion":"us-gov-west-1"},"s3signature":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"s3"},"usIso":{"endpoint":"{service}.{region}.c2s.ic.gov"},"usIsob":{"endpoint":"{service}.{region}.sc2s.sgov.gov"},"fipsStandard":{"endpoint":"{service}-fips.{region}.amazonaws.com"},"fipsDotPrefix":{"endpoint":"fips.{service}.{region}.amazonaws.com"},"fipsWithoutRegion":{"endpoint":"{service}-fips.amazonaws.com"},"fips.api.ecr":{"endpoint":"ecr-fips.{region}.amazonaws.com"},"fips.api.sagemaker":{"endpoint":"api-fips.sagemaker.{region}.amazonaws.com"},"fips.models.lex":{"endpoint":"models-fips.lex.{region}.amazonaws.com"},"fips.runtime.lex":{"endpoint":"runtime-fips.lex.{region}.amazonaws.com"},"fipsWithServiceOnly":{"endpoint":"{service}.{region}.amazonaws.com"},"dualstackLegacy":{"endpoint":"{service}.dualstack.{region}.amazonaws.com"},"dualstackLegacyCn":{"endpoint":"{service}.dualstack.{region}.amazonaws.com.cn"},"dualstackFipsLegacy":{"endpoint":"{service}-fips.dualstack.{region}.amazonaws.com"},"dualstackFipsLegacyCn":{"endpoint":"{service}-fips.dualstack.{region}.amazonaws.com.cn"},"dualstackLegacyEc2":{"endpoint":"api.ec2.{region}.aws"},"dualstackByDefault":{"endpoint":"{service}.{region}.api.aws"},"fipsDualstackByDefault":{"endpoint":"{service}-fips.{region}.api.aws"},"globalDualstackByDefault":{"endpoint":"{service}.global.api.aws"},"fipsGlobalDualstackByDefault":{"endpoint":"{service}-fips.global.api.aws"}}}');
 
 /***/ }),
 
@@ -42683,7 +42683,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -42697,7 +42697,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -42706,23 +42706,23 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/ 	
+/******/
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/
 /************************************************************************/
-/******/ 	
+/******/
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __nccwpck_require__(6144);
 /******/ 	module.exports = __webpack_exports__;
-/******/ 	
+/******/
 /******/ })()
 ;

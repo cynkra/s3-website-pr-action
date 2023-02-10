@@ -5,7 +5,7 @@ import path from 'path';
 import filePathToS3Key from './filePathToS3Key';
 import mimeTypes from 'mime-types';
 
-export default async (bucketName: string, directory: string) => {
+export default async (bucketName: string, directory: string, region: string) => {
   const normalizedPath = path.normalize(directory);
 
   const files = await readdir(normalizedPath);
@@ -27,7 +27,8 @@ export default async (bucketName: string, directory: string) => {
           Body: fileBuffer,
           ACL: 'public-read',
           ServerSideEncryption: 'AES256',
-          ContentType: mimeType
+          ContentType: mimeType,
+          Region: region
         }).promise();
       } catch (e) {
         const message = `Failed to upload ${s3Key}: ${e.code} - ${e.message}`;
