@@ -25,6 +25,7 @@ export default async (bucketName: string, directory: string) => {
           Bucket: bucketName,
           Key: s3Key,
           Body: fileBuffer,
+          ACL: 'public-read',
           ServerSideEncryption: 'AES256',
           ContentType: mimeType,
         }).promise();
