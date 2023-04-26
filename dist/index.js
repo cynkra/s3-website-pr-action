@@ -40164,7 +40164,7 @@ exports["default"] = (bucketName, uploadDirectory, environmentPrefix) => __await
     if (!bucketExists) {
         console.log("S3 bucket does not exist. Creating...");
         yield s3Client_1.default.createBucket({ Bucket: bucketName }).promise();
-        yield s3Client_1.default.deletePublicAccessBlock().promise();
+        yield s3Client_1.default.deletePublicAccessBlock({ Bucket: bucketName }).promise();
         console.log("Configuring bucket website...");
         yield s3Client_1.default.putBucketWebsite({
             Bucket: bucketName,
