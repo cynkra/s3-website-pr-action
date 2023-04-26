@@ -40165,7 +40165,14 @@ exports["default"] = (bucketName, uploadDirectory, environmentPrefix) => __await
         console.log("S3 bucket does not exist. Creating...");
         yield s3Client_1.default.createBucket({ Bucket: bucketName }).promise();
         yield s3Client_1.default.deletePublicAccessBlock({ Bucket: bucketName }).promise();
-        yield s3Client_1.default.putBucketAcl({ Bucket: bucketName, ACL: 'public-read', }).promise();
+        const readOnlyPolicy = {
+            Sid: 'PublicReadGetObject',
+            Effect: 'Allow',
+            Action: ['s3:GetObject'],
+            Principal: "*",
+            Resource: [`arn:aws:s3:::${bucketName}/*`],
+        };
+        yield s3Client_1.default.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(readOnlyPolicy) }).promise();
         console.log("Configuring bucket website...");
         yield s3Client_1.default.putBucketWebsite({
             Bucket: bucketName,
@@ -40509,7 +40516,6 @@ exports["default"] = (bucketName, directory) => __awaiter(void 0, void 0, void 0
                 Bucket: bucketName,
                 Key: s3Key,
                 Body: fileBuffer,
-                ACL: 'public-read',
                 ServerSideEncryption: 'AES256',
                 ContentType: mimeType,
             }).promise();

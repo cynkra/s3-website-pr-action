@@ -26,9 +26,17 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
 
   if (!bucketExists) {
     console.log("S3 bucket does not exist. Creating...");
+
     await S3.createBucket({ Bucket: bucketName }).promise();
     await S3.deletePublicAccessBlock({ Bucket: bucketName }).promise();
-    await S3.putBucketAcl({Bucket: bucketName, ACL: 'public-read',}).promise();
+    const readOnlyPolicy = {
+      Sid: 'PublicReadGetObject',
+      Effect: 'Allow',
+      Action: ['s3:GetObject'],
+      Principal: "*",
+      Resource: [`arn:aws:s3:::${bucketName}/*`],
+    };
+    await S3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(readOnlyPolicy) }).promise();
 
     console.log("Configuring bucket website...");
     await S3.putBucketWebsite({
