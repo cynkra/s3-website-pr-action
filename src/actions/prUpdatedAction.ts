@@ -26,7 +26,8 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
 
   if (!bucketExists) {
     console.log("S3 bucket does not exist. Creating...");
-    await S3.createBucket({ Bucket: bucketName, ACL: "public-read" }).promise();
+    await S3.createBucket({ Bucket: bucketName }).promise();
+    await S3.deletePublicAccessBlock().promise();
 
     console.log("Configuring bucket website...");
     await S3.putBucketWebsite({
