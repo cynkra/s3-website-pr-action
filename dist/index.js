@@ -40166,11 +40166,13 @@ exports["default"] = (bucketName, uploadDirectory, environmentPrefix) => __await
         yield s3Client_1.default.createBucket({ Bucket: bucketName }).promise();
         yield s3Client_1.default.deletePublicAccessBlock({ Bucket: bucketName }).promise();
         const readOnlyPolicy = {
-            Sid: 'PublicReadGetObject',
-            Effect: 'Allow',
-            Action: ['s3:GetObject'],
-            Principal: "*",
-            Resource: [`arn:aws:s3:::${bucketName}/*`],
+            "Statement": [{
+                    Sid: 'PublicReadGetObject',
+                    Effect: 'Allow',
+                    Action: ['s3:GetObject'],
+                    Principal: "*",
+                    Resource: [`arn:aws:s3:::${bucketName}/*`],
+                }]
         };
         yield s3Client_1.default.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(readOnlyPolicy) }).promise();
         console.log("Configuring bucket website...");
