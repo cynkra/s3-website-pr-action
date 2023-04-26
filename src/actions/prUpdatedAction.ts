@@ -12,8 +12,8 @@ export const requiredEnvVars = [
   "GITHUB_TOKEN",
 ];
 
-export default async (bucketName: string, uploadDirectory: string, environmentPrefix: string, region: string) => {
-  const awsRegion = process.env['AWS_REGION'] ? process.env['AWS_REGION'] : 'eu-central-1';
+export default async (bucketName: string, uploadDirectory: string, environmentPrefix: string) => {
+  const awsRegion = process.env['AWS_REGION'] ? process.env['AWS_REGION'] : 'us-east-1';
   const websiteUrl = `http://${bucketName}.s3-website.${awsRegion}.amazonaws.com`;
   const { repo } = github.context;
   const branchName = github.context.payload.pull_request!.head.ref;
@@ -26,12 +26,11 @@ export default async (bucketName: string, uploadDirectory: string, environmentPr
 
   if (!bucketExists) {
     console.log("S3 bucket does not exist. Creating...");
-    await S3.createBucket({ Bucket: bucketName }).promise();
+    await S3.createBucket({ Bucket: bucketName, ACL: "public-read" }).promise();
 
     console.log("Configuring bucket website...");
     await S3.putBucketWebsite({
       Bucket: bucketName,
-      Region: region,
       WebsiteConfiguration: {
         IndexDocument: { Suffix: "index.html" },
         ErrorDocument: { Key: "index.html" },

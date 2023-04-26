@@ -7,7 +7,7 @@ import deleteDeployments from "../utils/deleteDeployments";
 
 export const requiredEnvVars = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'];
 
-export default async (bucketName: string, environmentPrefix: string, region: string) => {
+export default async (bucketName: string, environmentPrefix: string) => {
   const { repo } = github.context;
 
   validateEnvVars(requiredEnvVars);
@@ -19,11 +19,10 @@ export default async (bucketName: string, environmentPrefix: string, region: str
   let nextContinuationToken: string | undefined = undefined;
   let objects: ListObjectsV2Output;
   while(isTruncated){
-    objects = await S3.listObjectsV2({ Bucket: bucketName, region: region, ContinuationToken: nextContinuationToken }).promise();
+    objects = await S3.listObjectsV2({ Bucket: bucketName, ContinuationToken: nextContinuationToken }).promise();
     if (objects.Contents && objects.Contents.length >= 1) {
       const deleteParams: DeleteObjectsRequest = {
         Bucket: bucketName,
-        Region: region,
         Delete: {
           Objects: []
         }
